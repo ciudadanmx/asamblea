@@ -56,11 +56,13 @@
       color: var(--muted); margin-top:4px; font-size: 14px;
     }
     .panel{
-      margin-top:20px; padding:16px;
-      background: rgba(255,242,0,.06);
-      border: 1px dashed rgba(255,242,0,.35);
-      border-radius: 16px;
-    }
+  margin-top:20px; padding:16px;
+  background: rgba(255,242,0,.06);
+  border: 1px dashed rgba(255,242,0,.35);
+  border-radius: 16px;
+  max-width: 480px;
+  width: 100%;
+}
     .status{
       font-size: clamp(16px, 2vw, 18px);
       margin: 0 0 16px 0;
@@ -89,8 +91,10 @@
     }
     .passcode h3{ color:red; margin:0; font-size:16px; }
     .grid{
-      display:grid; grid-template-columns: 1fr; gap:14px; margin-top: 18px;
-    }
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
     .kvs{
       display:flex; flex-wrap:wrap; gap:10px; font-size: 13px; color: var(--muted);
       margin-top:14px;
