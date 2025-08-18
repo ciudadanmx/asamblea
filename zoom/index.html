@@ -1,1 +1,302 @@
-Ingresar a la reunión de zoom
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reuniones | Ciudadan</title>
+  <style>
+    :root{
+      --brand: #fff200;
+      --gray: #6d6e71;
+      --bg: #0c0c0c;
+      --card: #141414;
+      --text: #f7f7f7;
+      --muted: #c7c7c7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(255,242,0,.08), transparent 60%), 
+                  radial-gradient(800px 600px at 120% 10%, rgba(109,110,113,.12), transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .card{
+      width:min(720px, 100%);
+      background: linear-gradient(180deg, rgba(255,242,0,.06), rgba(255,242,0,0) 30%), var(--card);
+      border: 1px solid rgba(255,242,0,.15);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,242,0,.05);
+      padding: 28px;
+      animation: pop .35s ease-out;
+    }
+    @keyframes pop{ from{ transform: translateY(6px); opacity: .0; } to{ transform: translateY(0); opacity: 1; } }
+    .header{
+      display:flex; align-items:center; gap:12px; margin-bottom:16px;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(0,0,0,.15), transparent 45%),
+        var(--brand);
+      border:3px solid var(--gray);
+      display:grid; place-items:center;
+      box-shadow: 0 6px 16px rgba(255,242,0,.2);
+      flex:0 0 auto;
+    }
+    .logo::after{
+      content:"C";
+      font-weight: 800; color:#000; font-size: 20px; transform: translateY(-1px);
+    }
+    .title{
+      font-size: clamp(18px, 2.4vw, 24px); font-weight: 800; line-height:1.1;
+    }
+    .subtitle{
+      color: var(--muted); margin-top:4px; font-size: 14px;
+    }
+    .panel{
+      margin-top:20px; padding:16px;
+      background: rgba(255,242,0,.06);
+      border: 1px dashed rgba(255,242,0,.35);
+      border-radius: 16px;
+    }
+    .status{
+      font-size: clamp(16px, 2vw, 18px);
+      margin: 0 0 16px 0;
+    }
+    .btn{
+      -webkit-tap-highlight-color: transparent;
+      appearance:none; border:none; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding: 14px 18px; width:100%;
+      border-radius: 14px;
+      font-size: clamp(15px, 2.2vw, 17px); font-weight: 800; letter-spacing:.2px;
+      background: linear-gradient(180deg, #fff200, #e2d700);
+      color:#000;
+      box-shadow: 0 10px 18px rgba(255,242,0,.25), 0 1px 0 rgba(255,255,255,.6) inset;
+      transform: translateY(0);
+      transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow: 0 14px 24px rgba(255,242,0,.32); }
+    .btn:active{ transform: translateY(0); filter: brightness(.96); }
+    .linkline{
+      margin-top: 12px; text-align:center; word-break: break-all;
+    }
+    .linkline a{ color: var(--brand); text-underline-offset: 3px; }
+    .grid{
+      display:grid; grid-template-columns: 1fr; gap:14px; margin-top: 18px;
+    }
+    .kvs{
+      display:flex; flex-wrap:wrap; gap:10px; font-size: 13px; color: var(--muted);
+    }
+    .pill{
+      border:1px solid rgba(255,242,0,.25); padding:6px 10px; border-radius:999px; background: rgba(255,242,0,.04);
+    }
+    .foot{
+      margin-top: 18px; font-size: 12px; color: var(--muted);
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .blink{
+      display:inline-block;
+      width:10px; height:10px; border-radius:50%;
+      background: #2ee86b; box-shadow: 0 0 0 0 rgba(46,232,107,.8);
+      animation: ping 1.4s infinite;
+    }
+    @keyframes ping{
+      0%{ box-shadow: 0 0 0 0 rgba(46,232,107,.7); }
+      70%{ box-shadow: 0 0 0 12px rgba(46,232,107,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(46,232,107,0); }
+    }
+    @media (min-width: 720px){
+      .grid{ grid-template-columns: 1.2fr .8fr; }
+    }
+    .muted{ color: var(--muted); }
+    code{ padding:2px 6px; border-radius:8px; background:#0f0f10; border:1px solid #202024; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-live="polite">
+    <div class="header">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <div class="title">Salas de reunión</div>
+        <div class="subtitle">Zona horaria fija: Ciudad de México (America/Mexico_City)</div>
+      </div>
+    </div>
+
+    <section class="grid">
+      <div class="panel">
+        <p id="status" class="status">Cargando horarios…</p>
+        <button id="joinBtn" class="btn" style="display:none;">Entrar a la reunión</button>
+        <div id="linkLine" class="linkline"></div>
+      </div>
+
+      <aside>
+        <div class="kvs">
+          <span class="pill">Formato 24h</span>
+          <span class="pill">Actualiza automático</span>
+          <span class="pill">Repite a diario</span>
+        </div>
+        <div class="foot">
+          <div><span id="liveDot" class="blink" style="display:none;"></span> <span id="liveText"></span></div>
+          <div class="muted">Ahora en CDMX: <code id="nowCdmx">--:--</code></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // =========================
+    // 1) Horarios (CDMX) + URLs
+    // =========================
+    // Puedes editar/añadir rangos aquí.
+    // Formato "HH:MM-HH:MM" 24h, por día; se asume que se repiten todos los días.
+    const SCHEDULE = [      
+      { range: "09:00-09:40", url: "https://us05web.zoom.us/j/85995475981?pwd=9wv9rHWeCUb9DWWjaq4ynuzTukrlTu.1" },
+      { range: "19:00-19:40", url: "https://us05web.zoom.us/j/86005186551?pwd=PfQYeKRBQWV1SfASkH4vAmHT5EgvZN.1" },
+    ];
+
+    // ==========================================
+    // 2) Utilidades de Tiempo en la TZ de México
+    // ==========================================
+    const TZ = 'America/Mexico_City';
+
+    function getNowPartsInCdmx(){
+      const now = new Date();
+      const fmt = new Intl.DateTimeFormat('en-CA', {
+        timeZone: TZ,
+        hour: '2-digit', minute:'2-digit', second:'2-digit',
+        hourCycle: 'h23',
+        year: 'numeric', month:'2-digit', day:'2-digit',
+        weekday: 'long'
+      });
+      const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+      // parts.hour es "00".."23"
+      return {
+        hour: Number(parts.hour),
+        minute: Number(parts.minute),
+        second: Number(parts.second),
+        y: Number(parts.year),
+        m: Number(parts.month),
+        d: Number(parts.day),
+        weekday: parts.weekday
+      };
+    }
+
+    function minutesOfDayCDMX(){
+      const {hour, minute} = getNowPartsInCdmx();
+      return hour * 60 + minute;
+    }
+
+    function formatHM(mins){ // 0..1439 → "HH:MM"
+      const h = String(Math.floor(mins / 60)).padStart(2, '0');
+      const m = String(mins % 60).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function parseRange(range){ // "HH:MM-HH:MM" → {start,end} en minutos
+      const [a,b] = range.split('-');
+      const [h1,m1] = a.split(':').map(Number);
+      const [h2,m2] = b.split(':').map(Number);
+      return { start: h1*60 + m1, end: h2*60 + m2 };
+    }
+
+    function isNowInRange(nowMin, start, end){
+      // soporta rangos que cruzan medianoche: ej. 23:30-00:30
+      if (start <= end){
+        return nowMin >= start && nowMin < end;
+      } else {
+        return (nowMin >= start) || (nowMin < end);
+      }
+    }
+
+    // Devuelve el elemento actual (si ahora está dentro) o null,
+    // y además calcula el próximo inicio (minutos) y su objeto schedule.
+    function computeState(){
+      const nowMin = minutesOfDayCDMX();
+      let current = null;
+
+      // 1) ¿Hay reunión en curso?
+      for (const item of SCHEDULE){
+        const {start, end} = parseRange(item.range);
+        if (isNowInRange(nowMin, start, end)){
+          current = { ...item, start, end };
+          break;
+        }
+      }
+
+      // 2) Próxima reunión: el inicio con delta más pequeño en [1..1440]
+      let best = null; // {delta, startMin, item}
+      for (const item of SCHEDULE){
+        const {start} = parseRange(item.range);
+        let delta = (start - nowMin);
+        if (delta <= 0) delta += 1440; // mañana
+        if (!best || delta < best.delta){
+          best = { delta, startMin: start, item };
+        }
+      }
+
+      return { nowMin, current, next: best };
+    }
+
+    function updateUI(){
+      const status = document.getElementById('status');
+      const btn = document.getElementById('joinBtn');
+      const linkLine = document.getElementById('linkLine');
+      const nowCdmxEl = document.getElementById('nowCdmx');
+      const liveDot = document.getElementById('liveDot');
+      const liveText = document.getElementById('liveText');
+
+      // Mostrar hora actual en CDMX
+      const nowParts = getNowPartsInCdmx();
+      nowCdmxEl.textContent = `${String(nowParts.hour).padStart(2,'0')}:${String(nowParts.minute).padStart(2,'0')}`;
+
+      const { current, next } = computeState();
+
+      if (current){
+        // Reunión en curso
+        const { range, url } = current;
+        status.innerHTML = `Para ingresar a la reunión en curso actualmente, pulsa el botón: <br><small class="muted">(horario ${range} CDMX)</small>`;
+        btn.style.display = 'inline-flex';
+        btn.onclick = () => window.location.href = url;
+        btn.setAttribute('aria-label','Entrar a la reunión en curso');
+        btn.textContent = 'Entrar a la reunión';
+
+        linkLine.innerHTML = `De todos modos, aquí está el enlace: <a href="${url}" rel="noopener noreferrer">${url}</a>`;
+        liveDot.style.display = '';
+        liveText.textContent = 'En curso';
+      } else {
+        // No hay reunión en curso → próxima
+        const nextStart = next.startMin;
+        const nextItem = next.item;
+        const nextTimeStr = formatHM(nextStart);
+
+        // ¿es hoy o mañana?
+        const nowMin = minutesOfDayCDMX();
+        const isToday = nextStart > nowMin; // si el inicio aún no pasó hoy
+        const diaTxt = isToday ? 'hoy' : 'mañana';
+
+        status.innerHTML = `La próxima reunión es <strong>${diaTxt} a las ${nextTimeStr}</strong> (CDMX). <br><small class="muted">(horario ${nextItem.range})</small>`;
+        btn.style.display = 'inline-flex';
+        btn.onclick = () => window.location.href = nextItem.url;
+        btn.setAttribute('aria-label','Ir a la próxima reunión');
+        btn.textContent = 'Ir a la próxima reunión';
+
+        linkLine.innerHTML = `Enlace de la próxima: <a href="${nextItem.url}" rel="noopener noreferrer">${nextItem.url}</a>`;
+        liveDot.style.display = 'none';
+        liveText.textContent = '';
+      }
+    }
+
+    // Primer render y actualización cada 20s
+    updateUI();
+    setInterval(updateUI, 20000);
+  </script>
+
+
+<h3><font color="red">Passcode: ciudadan </font></h3>
+
+
+</body>
+</html>
