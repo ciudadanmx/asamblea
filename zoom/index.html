@@ -138,7 +138,7 @@
     <section class="grid">
       <div class="panel">
         <p id="status" class="status">Cargando horarios…</p>
-        <button id="joinBtn" class="btn" style="display:none;">Entrar a la reunión</button>
+        <div id="btnContainer"></div>
         <div id="linkLine" class="linkline"></div>
         <div class="passcode"><h3>Passcode: ciudadan</h3></div>
         <hr>
@@ -229,49 +229,74 @@
       return { nowMin, current, next: best };
     }
     function updateUI(){
-      const status = document.getElementById('status');
-      const btn = document.getElementById('joinBtn');
-      const linkLine = document.getElementById('linkLine');
-      const nowCdmxEl = document.getElementById('nowCdmx');
-      const liveDot = document.getElementById('liveDot');
-      const liveText = document.getElementById('liveText');
+  const status = document.getElementById('status');
+  const btnContainer = document.getElementById('btnContainer');
+  const linkLine = document.getElementById('linkLine');
+  const nowCdmxEl = document.getElementById('nowCdmx');
+  const liveDot = document.getElementById('liveDot');
+  const liveText = document.getElementById('liveText');
 
-      const nowParts = getNowPartsInCdmx();
-      nowCdmxEl.textContent = `${String(nowParts.hour).padStart(2,'0')}:${String(nowParts.minute).padStart(2,'0')}`;
+  btnContainer.innerHTML = ''; // limpiamos botones previos
 
-      const { current, next } = computeState();
+  const nowParts = getNowPartsInCdmx();
+  nowCdmxEl.textContent = `${String(nowParts.hour).padStart(2,'0')}:${String(nowParts.minute).padStart(2,'0')}`;
 
-      if (current){
-        const { range, url } = current;
-        status.innerHTML = `Para ingresar a la reunión en curso actualmente, pulsa el botón: <br><small class="muted">(horario ${range} CDMX)</small>`;
-        btn.style.display = 'inline-flex';
-        btn.onclick = () => window.location.href = url;
-        btn.setAttribute('aria-label','Entrar a la reunión en curso');
-        btn.textContent = 'Entrar a la reunión';
+  const { current, next } = computeState();
+  const nowMin = minutesOfDayCDMX();
 
-        linkLine.innerHTML = `De todos modos, aquí está el enlace: <a href="${url}" rel="noopener noreferrer">${url}</a>`;
-        liveDot.style.display = '';
-        liveText.textContent = 'En curso';
-      } else {
-        const nextStart = next.startMin;
-        const nextItem = next.item;
-        const nextTimeStr = formatHM(nextStart);
+  if (current){
+    const { range, url } = current;
+    status.innerHTML = `En curso: <small class="muted">(horario ${range} CDMX)</small>`;
 
-        const nowMin = minutesOfDayCDMX();
-        const isToday = nextStart > nowMin;
-        const diaTxt = isToday ? 'hoy' : 'mañana';
+    // botón reunión actual
+    const btnActual = document.createElement('button');
+    btnActual.className = 'btn';
+    const [h1,h2] = range.split('-');
+    btnActual.textContent = `Reunión de las ${h1} a las ${h2}`;
+    btnActual.onclick = () => window.location.href = url;
+    btnContainer.appendChild(btnActual);
 
-        status.innerHTML = `La próxima reunión es <strong>${diaTxt} a las ${nextTimeStr}</strong> (CDMX). <br><small class="muted">(horario ${nextItem.range})</small>`;
-        btn.style.display = 'inline-flex';
-        btn.onclick = () => window.location.href = nextItem.url;
-        btn.setAttribute('aria-label','Ir a la próxima reunión');
-        btn.textContent = 'Ir a la próxima reunión';
-
-        linkLine.innerHTML = `Enlace de la próxima: <a href="${nextItem.url}" rel="noopener noreferrer">${nextItem.url}</a>`;
-        liveDot.style.display = 'none';
-        liveText.textContent = '';
+    // mostrar botón de la siguiente si estamos en ventana de transición
+    if (next){
+      const nextStart = next.startMin;
+      if (nextStart - nowMin <= 5 && nextStart - nowMin >= 0){
+        const [h1n,h2n] = next.item.range.split('-');
+        const btnNext = document.createElement('button');
+        btnNext.className = 'btn';
+        btnNext.style.marginTop = '10px';
+        btnNext.textContent = `Reunión de las ${h1n} a las ${h2n}`;
+        btnNext.onclick = () => window.location.href = next.item.url;
+        btnContainer.appendChild(btnNext);
       }
     }
+
+    linkLine.innerHTML = `Enlace: <a href="${url}" rel="noopener noreferrer">${url}</a>`;
+    liveDot.style.display = '';
+    liveText.textContent = 'En curso';
+
+  } else {
+    const nextStart = next.startMin;
+    const nextItem = next.item;
+    const [h1,h2] = nextItem.range.split('-');
+    const nextTimeStr = formatHM(nextStart);
+
+    const isToday = nextStart > nowMin;
+    const diaTxt = isToday ? 'hoy' : 'mañana';
+
+    status.innerHTML = `Próxima: <strong>${diaTxt} a las ${nextTimeStr}</strong> (CDMX). <br><small class="muted">(horario ${nextItem.range})</small>`;
+
+    // botón próxima reunión
+    const btnNext = document.createElement('button');
+    btnNext.className = 'btn';
+    btnNext.textContent = `Reunión de las ${h1} a las ${h2}`;
+    btnNext.onclick = () => window.location.href = nextItem.url;
+    btnContainer.appendChild(btnNext);
+
+    linkLine.innerHTML = `Enlace: <a href="${nextItem.url}" rel="noopener noreferrer">${nextItem.url}</a>`;
+    liveDot.style.display = 'none';
+    liveText.textContent = '';
+  }
+}
     updateUI();
     setInterval(updateUI, 20000);
   </script>
